@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Ekstralar, Filtre Kahveler ve Espresso Kahveler</title>
+    <!-- Stil ve diğer başlık etiketlerini burada ekleyebilirsiniz -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            border-bottom: 2px solid #999;
+            padding-bottom: 5px;
+            color: #555;
+        }
+
+        h2 {
+            margin-top: 30px;
+            color: #4CAF50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: #fff;
+            font-weight: bold;
+            border-bottom: 2px solid #ccc;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Styling checkboxes */
+        input[type="checkbox"] {
+            transform: scale(1.5);
+            margin-right: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Styling links */
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid #4CAF50;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        /* Styling dropdown content */
+        .boyut-listesi {
+            display: none;
+            list-style-type: none;
+            padding: 0;
+            margin: 5px 0;
+        }
+
+        .boyut-listesi li {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .boyut-listesi input[type="radio"] {
+            display: none;
+        }
+
+        .boyut-listesi label {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: 1px solid #4CAF50;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .boyut-listesi input[type="radio"]:checked+label {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sipariş Detayları</h1>
+    <form method="post" th:action="@{/siparisDetayKaydet}">
+        <h2>Ekstralar</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ekstra Adı</th>
+                    <th>Ekstra Fiyatı</th>
+                    <th>Sipariş Detayı</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="ekstra : ${ekstralarList}">
+                    <td th:text="${ekstra.ekstraAdi}"></td>
+                    <td th:text="${ekstra.ekstraFiyati}"></td>
+                    <td>
+                        <input type="hidden" name="secilenEkstraIdList" th:value="${ekstra.id}">
+                        <input type="checkbox" name="secilenEkstralar" th:value="${ekstra.id}">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Filtre Kahveler</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kahve Adı</th>
+                    <th>Kahve Fiyatı</th>
+                    <th>Sipariş Detayı</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="filtre : ${filtreKahvelerList}">
+                    <td>
+                        <span class="kahve-adi" th:text="${filtre.kahve_adi}" th:data-kahve-id="${filtre.id}"></span>
+                        <ul class="boyut-listesi" th:id="'boyut-listesi-' + ${filtre.id}" style="display: none;">
+                            <li>
+                                <input type="radio" name="'secilenBoyut_' + ${filtre.id}" value="kucuk" th:id="'kucuk_' + ${filtre.id}">
+                                <label for="'kucuk_' + ${filtre.id}">Küçük</label>
+                            </li>
+                            <li>
+                                <input type="radio" name="'secilenBoyut_' + ${filtre.id}" value="orta" th:id="'orta_' + ${filtre.id}">
+                                <label for="'orta_' + ${filtre.id}">Orta</label>
+                            </li>
+                            <li>
+                                <input type="radio" name="'secilenBoyut_' + ${filtre.id}" value="buyuk" th:id="'buyuk_' + ${filtre.id}">
+                                <label for="'buyuk_' + ${filtre.id}">Büyük</label>
+                            </li>
+                        </ul>
+                    </td>
+                    <td th:text="${filtre.kahve_fiyati}"></td>
+                    <td>
+                        <input type="hidden" name="secilenFiltreKahvelerIdList" th:value="${filtre.id}">
+                        <input type="checkbox" name="secilenFiltreKahveler" th:value="${filtre.id}">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <script>
+            // JavaScript ile boyut seçimini yapmak için event dinleyici ekleyin
+            document.querySelectorAll('.kahve-adi').forEach(function (element) {
+                element.addEventListener('click', function () {
+                    var kahveId = element.getAttribute('data-kahve-id');
+                    var boyutListesi = document.getElementById('boyut-listesi-' + kahveId);
+                    if (boyutListesi.style.display === 'none') {
+                        boyutListesi.style.display = 'block';
+                    } else {
+                        boyutListesi.style.display = 'none';
+                    }
+                });
+            });
+        </script>
+        
+        
+        
+
+        <h2>Espresso Kahveler</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kahve Adı</th>
+                    <th>Kahve Fiyatı</th>
+                    <th>Sipariş Detayı</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- espressoKahvelerList modelinden verileri döngüyle doldur -->
+                <tr th:each="espresso : ${espressoKahvelerList}">
+                    <td th:text="${espresso.kahve_adi}"></td>
+                    <td th:text="${espresso.kahve_fiyati}"></td>
+                    <td>
+                        <input type="hidden" name = "secilenEspressoKahvelerIdList" th:value="${espresso.id}">
+                        <input type="checkbox" name="secilenEspressoKahveler" th:value="${espresso.id}">                    
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Türk Kahveleri</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kahve Adı</th>
+                    <th>Kahve Fiyatı</th>
+                    <th>Sipariş Detayı</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- turkKahvelerList modelinden verileri döngüyle doldur -->
+                <tr th:each="turkKahve : ${turkKahvelerList}">
+                    <td th:text="${turkKahve.kahve_adi}"></td>
+                    <td th:text="${turkKahve.kahve_fiyati}"></td>
+                    <td>
+                        <input type="hidden" name = "secilenTurkKahveIdList" th:value="${turkKahve.id}">
+                        <input type="checkbox" name="secilenTurkKahve" th:value="${turkKahve.id}">                    
+                    </td>                
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Soğuk Espresso Kahveleri</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kahve Adı</th>
+                    <th>Kahve Fiyatı</th>
+                    <th>Sipariş Detayı</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- sogukEspressoKahvelerList modelinden verileri döngüyle doldur -->
+                <tr th:each="sogukEspresso : ${sogukEspressoKahvelerList}">
+                    <td th:text="${sogukEspresso.kahve_adi}"></td>
+                    <td th:text="${sogukEspresso.kahve_fiyati}"></td>
+                    <td>
+                        <input type="hidden" name = "secilenSogukEspressoIdList" th:value="${sogukEspresso.id}">
+                        <input type="checkbox" name="secilenSogukEspresso" th:value="${sogukEspresso.id}">                    
+                    </td>                
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Diğer tabloları burada da ekleyebilirsiniz -->
+
+        <button type="submit">Siparişi Tamamla</button>
+        <a href="siparişlerView.html" class="btn btn-primary">Tüm Siparişlere Git</a>
+
+    </form>
+</body>
+</html>
+

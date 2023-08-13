@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Siparis Detaylari</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Siparis Detaylari</h1>
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Urun Adi</th>
+                    <th scope="col">Urun Fiyati</th>
+                    <th scope="col">Gonderilme Zamani</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="siparisDetayi : ${siparisDetaylariList}">
+                    <td th:text="${siparisDetayi.urunAdi}"></td>
+                    <td th:text="${siparisDetayi.urunFiyati}"></td>
+                    <td th:text="${siparisDetayi.gonderilmeZamani}"></td>
+                </tr>
+            </tbody>            
+        </table>
+    </div>
+
+    <!-- Add Bootstrap JS and jQuery scripts (at the end of the body) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
